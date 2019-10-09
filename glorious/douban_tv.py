@@ -113,15 +113,13 @@ def main():
     # 获取控制台标准参数
     data = get_standard_args()
 
-    # 缺省值
-
-    if data.get('-t'):
+    # 字典-t剧集类型中英转化
+    en_tags = data.get('-t')
+    if en_tags:
         d = dict(us='美剧', gb='英剧', kr='韩剧', jp='日剧', cn='国产剧', jpa='日本动画', df='纪录片', )
-        en_tags = data['-t']
-        tags = []
-        for en_tag in en_tags:
-            tags.append(d[en_tag])
+        tags = [d[en_tag] for en_tag in en_tags]
 
+    # 缺省值
     rate = float(data.get('-r', 8.5))
     vote = int(data.get('-v', 10000))
     nums = int(data.get('-n', 3))
@@ -146,7 +144,6 @@ def main():
 
 
 if __name__ == "__main__":
-
     # 初始化
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
