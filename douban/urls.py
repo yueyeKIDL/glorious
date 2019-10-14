@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
+
+
+from douban import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('douban/', include('douban.urls')),
+    path('', views.index),
+    path('redis_keys/', views.redis_keys),
+    path('index/', TemplateView.as_view(template_name='index.html')),
 ]
