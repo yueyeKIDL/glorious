@@ -22,6 +22,5 @@ from douban import views
 
 urlpatterns = [
     path('', views.index),
-    path('redis_keys/', views.redis_keys),
     path('index/', TemplateView.as_view(template_name='index.html')),
 ]

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,46 +9,45 @@
 <!-- 图表容器 DOM -->
 {#    <div id="container" style="width: 600px;height:400px;"></div>#}
 <div id="container" style="min-width:400px;height:400px"></div>
+<br>
 <!-- 引入 highcharts.js -->
-<script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+{#<script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>#}
+<script src="{% static 'highcharts/highcharts.js' %}"></script>
+{#<script src="{% static 'highcharts/highcharts.js' %}"></script>#}
 <script>
-    var chart = Highcharts.chart('container', {
+    let chart = Highcharts.chart('container', {
         chart: {
             zoomType: 'xy'
         },
         title: {
-            text: '东京月平均温度和降雨量'
-        },
-        subtitle: {
-            text: '数据来源: WorldClimate.com'
+            text: '月平均温度和降雨量'
         },
         xAxis: [{
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            categories:{{ titles }},
             crosshair: true
         }],
         yAxis: [{ // Primary yAxis
             labels: {
-                format: '{value}°C',
+                format: '{value} 分',
                 style: {
                     color: Highcharts.getOptions().colors[1]
                 }
             },
             title: {
-                text: '温度',
+                text: '评分',
                 style: {
                     color: Highcharts.getOptions().colors[1]
                 }
             }
         }, { // Secondary yAxis
             title: {
-                text: '降雨量',
+                text: '评论人数',
                 style: {
                     color: Highcharts.getOptions().colors[0]
                 }
             },
             labels: {
-                format: '{value} mm',
+                format: '{value} 人',
                 style: {
                     color: Highcharts.getOptions().colors[0]
                 }
@@ -64,24 +64,31 @@
             verticalAlign: 'top',
             y: 100,
             floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            itemStyle: {
+				color: '#000000',
+				fontWeight: 'bold'
+			}
         },
+        colors: ['#2f7ed8', '#8bbc21', '#1aadce', '#492970', '#f25912', '#77a1e5', '#c42525', '#a6c96a'],
         series: [{
-            name: '降雨量',
+            name: '评论人数',
+            colorByPoint: true,
             type: 'column',
             yAxis: 1,
-            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
+            data: {{ votes }},
             tooltip: {
-                valueSuffix: ' mm'
+                valueSuffix: ' 人'
             }
         }, {
-            name: '温度',
+            name: '评分',
+            color: '#f28f3b',
             type: 'spline',
-            data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6],
+            data: {{ rates }},
             tooltip: {
-                valueSuffix: '°C'
+                valueSuffix: '分'
             }
-        }]
+        },]
     });
 </script>
 </body>
