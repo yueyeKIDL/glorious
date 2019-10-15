@@ -171,11 +171,11 @@ def main():
     data = get_standard_args()
 
     # 缺省值
-    tags = data.get('-t', ['美剧', '英剧'])
+    tags = data.get('-t', ['美剧'])
     try:
-        rate = float(data.get('-r', 6))
-        vote = int(data.get('-v', 1000))
-        nums = int(data.get('-n', 2))
+        rate = float(data.get('-r', 7.5))
+        vote = int(data.get('-v', 10000))
+        nums = int(data.get('-n', 4))
     except ValueError as e:
         print('Warning!!! 参数有误', e)
         sys.exit(2)
@@ -193,11 +193,16 @@ def main():
 # @cache_page(60 * 15)
 def index(request):
     # result = main()
-    # tags, titles, ursl, rates, votes = [list(i) for i in zip(*result['美剧'])]
-    # print(111111, tags, titles, ursl, rates, votes)
-    titles = ['致命女人', '难以置信']
-    rates = [9.3, 9.3]
-    votes = [118285, 20682]
+    # tags = result.keys()
+    # _, titles, urls, rates, votes = [list(i) for i in zip(*result['美剧'])]
+    # print(111111, tags, titles, urls, rates, votes)
+    # rates = [float(i) for i in rates]
+    # votes = [float(i) for i in votes]
+    ss = [
+        {'tag': '美剧', 'titles': ['大青蛙大全', '亲卫队请问', '全微分给'], 'rates': [9.6, 7.5, 8.1], 'votes': [21000, 17500, 25000]},
+        {'tag': '日剧', 'titles': ['大青蛙大全', '亲卫队请问', '全微分给'], 'rates': [9.6, 7.5, 8.1], 'votes': [21000, 17500, 25000]},
+        {'tag': '韩剧', 'titles': ['大青蛙大全', '亲卫队请问', '全微分给'], 'rates': [9.6, 7.5, 8.1], 'votes': [21000, 17500, 25000]},
+    ]
     return render(request, 'index.html', locals())
 
 
