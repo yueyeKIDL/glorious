@@ -8,88 +8,94 @@
 <body>
 <!-- 图表容器 DOM -->
 {#    <div id="container" style="width: 600px;height:400px;"></div>#}
-<div id="container" style="min-width:400px;height:400px"></div>
+{% for s in ss %}
+    <div id="container{{ forloop.counter }}" style="min-width:400px;height:400px"></div>
+{% endfor %}
 <br>
 <!-- 引入 highcharts.js -->
 {#<script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>#}
 <script src="{% static 'highcharts/highcharts.js' %}"></script>
 {#<script src="{% static 'highcharts/highcharts.js' %}"></script>#}
 <script>
-    let chart = Highcharts.chart('container', {
-        chart: {
-            zoomType: 'xy'
-        },
-        title: {
-            text: '月平均温度和降雨量'
-        },
-        xAxis: [{
-            categories:{{ titles }},
-            crosshair: true
-        }],
-        yAxis: [{ // Primary yAxis
-            labels: {
-                format: '{value} 分',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
-                }
+    {% for s in ss %}
+        var chart = Highcharts.chart('container{{ forloop.counter }}', {
+            chart: {
+                zoomType: 'xy'
             },
             title: {
-                text: '评分',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
+                text: '{{ s.tag | safe }}的机器欧家栋其'
+            },
+            xAxis: [{
+                categories:{{ s.titles | safe }},
+                crosshair: true
+            }],
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value} 分',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: '评分',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
                 }
-            }
-        }, { // Secondary yAxis
-            title: {
-                text: '评论人数',
-                style: {
-                    color: Highcharts.getOptions().colors[0]
+            }, { // Secondary yAxis
+                title: {
+                    text: '评论人数',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                labels: {
+                    format: '{value} 人',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                x: 120,
+                verticalAlign: 'top',
+                y: 100,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                itemStyle: {
+                    color: '#000000',
+                    fontWeight: 'bold'
                 }
             },
-            labels: {
-                format: '{value} 人',
-                style: {
-                    color: Highcharts.getOptions().colors[0]
+            colors: ['#2f7ed8', '#8bbc21', '#1aadce', '#492970', '#f25912', '#77a1e5', '#c42525', '#a6c96a'],
+            series: [{
+                name: '评论人数',
+                colorByPoint: true,
+                type: 'column',
+                yAxis: 1,
+                data: {{ s.votes | safe }},
+                tooltip: {
+                    valueSuffix: ' 人'
                 }
-            },
-            opposite: true
-        }],
-        tooltip: {
-            shared: true
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'left',
-            x: 120,
-            verticalAlign: 'top',
-            y: 100,
-            floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-            itemStyle: {
-				color: '#000000',
-				fontWeight: 'bold'
-			}
-        },
-        colors: ['#2f7ed8', '#8bbc21', '#1aadce', '#492970', '#f25912', '#77a1e5', '#c42525', '#a6c96a'],
-        series: [{
-            name: '评论人数',
-            colorByPoint: true,
-            type: 'column',
-            yAxis: 1,
-            data: {{ votes }},
-            tooltip: {
-                valueSuffix: ' 人'
-            }
-        }, {
-            name: '评分',
-            color: '#f28f3b',
-            type: 'spline',
-            data: {{ rates }},
-            tooltip: {
-                valueSuffix: '分'
-            }
-        },]
-    });
+            }, {
+                name: '评分',
+                color: '#f28f3b',
+                type: 'line',
+                data: {{ s.rates | safe }},
+                tooltip: {
+                    valueSuffix: '分'
+                }
+            },]
+        });
+    {% endfor %}
+
+
 </script>
 </body>
 </html>
