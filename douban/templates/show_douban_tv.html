@@ -3,30 +3,37 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>第一个 Highcharts 图表</title>
+    <title>热门剧集</title>
 </head>
 <body>
+
 <!-- 图表容器 DOM -->
-{#    <div id="container" style="width: 600px;height:400px;"></div>#}
-{% for s in ss %}
+
+{% for per_data in douban_tv_data %}
     <div id="container{{ forloop.counter }}" style="min-width:400px;height:400px"></div>
+    <br><br><br>
 {% endfor %}
-<br>
-<!-- 引入 highcharts.js -->
+
+
+<!-- highcharts.js -->
+
+<!-- cdn -->
 {#<script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>#}
+
+<!-- 本地 -->
 <script src="{% static 'highcharts/highcharts.js' %}"></script>
-{#<script src="{% static 'highcharts/highcharts.js' %}"></script>#}
+
 <script>
-    {% for s in ss %}
+    {% for per_data in douban_tv_data %}
         var chart = Highcharts.chart('container{{ forloop.counter }}', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: '{{ s.tag | safe }}的机器欧家栋其'
+                text: '{{ per_data.tag | safe }}'
             },
             xAxis: [{
-                categories:{{ s.titles | safe }},
+                categories:{{ per_data.titles | safe }},
                 crosshair: true
             }],
             yAxis: [{ // Primary yAxis
@@ -79,7 +86,7 @@
                 colorByPoint: true,
                 type: 'column',
                 yAxis: 1,
-                data: {{ s.votes | safe }},
+                data: {{ per_data.votes | safe }},
                 tooltip: {
                     valueSuffix: ' 人'
                 }
@@ -87,7 +94,7 @@
                 name: '评分',
                 color: '#f28f3b',
                 type: 'line',
-                data: {{ s.rates | safe }},
+                data: {{ per_data.rates | safe }},
                 tooltip: {
                     valueSuffix: '分'
                 }

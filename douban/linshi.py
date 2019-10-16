@@ -1,9 +1,9 @@
-"""
-AUTHOR:yeuyeKIDL
-DATE:2019/10/16 -10:39
-"""
-import numpy as np
+import logging
 
-base_rate = np.mean([])
+logger = logging.getLogger('douban')
 
-print(base_rate)
+try:
+    1 / 0
+except Exception as e:
+    logger.exception(e)
+print('gogogo')

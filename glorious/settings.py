@@ -81,15 +81,29 @@ DATABASES = {
 
 # Caches
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "CONNECTION_POOL_KWARGS": {"max_connections": 100}
+#         }
+#     }
+# }
+
+
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {"max_connections": 100}
-        }
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',  # 数据库缓存
+        'LOCATION': 'cache_table',  # 缓存数据表
+        'TIMEOUT': 7 * 24 * 60 * 60,  # 缓存超时时间（默认300，None表示永不过期）
+        'OPTIONS': {
+            'MAX_ENTRIES': 365,  # 最大缓存个数（默认300）
+            'CULL_FREQUENCY': 3,  # 缓存到达最大个数之后，剔除缓存个数的比例，即：1/CULL_FREQUENCY（默认3）
+        },
     }
+
 }
 
 # django - redis作为session储存后端
@@ -142,3 +156,79 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 日志路径
+LOG_PATH = os.path.join(BASE_DIR, 'log')
+
+# 如果地址不存在，则自动创建log文件夹
+if not os.path.exists(LOG_PATH):
+    os.mkdir(LOG_PATH)
+
+# 日志系统
+LOGGING = {
+    # version只能为1,定义了配置文件的版本，当前版本号为1.0
+    "version": 1,
+    # True表示禁用logger
+    "disable_existing_loggers": False,
+    # 格式化
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s %(levelname)s [%(filename)s -> def %(funcName)s:line %(lineno)d] [%(message)s]'
+        },
+        'stander': {
+            'format': '[%(asctime)s][%(threadName)s:%(thread)d][task_id:%(name)s][%(filename)s%(funcName)s:%(lineno)d]'
+                      '[%(levelname)s][%(message)s]'
+        },
+        'simple': {
+            'format': '%(levelno)s %(module)s %(asctime)s %(message)s'
+        }
+    },
+
+    'handlers': {
+        'douban_handlers': {
+            'level': 'DEBUG',
+            # 超过5M重新命名，然后写入新的日志文件 txt.1,txt.2 ...
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 指定文件大小
+            'maxBytes': 5 * 1024 * 1024,
+            # 文件数
+            'backupCount': 5,
+            # 指定文件地址
+            'filename': '%s/douban.log' % LOG_PATH,
+            # 格式
+            'formatter': 'default',
+            # 编码
+            'encoding': 'utf-8',
+        },
+        # 'uauth_handlers': {
+        #     'level': 'DEBUG',
+        #     # 超过5M重新命名，然后写入新的日志文件 txt.1,txt.2 ...
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     # 指定文件大小
+        #     'maxBytes': 5 * 1024 * 1024,
+        #     # 文件数
+        #     'backupCount': 5,
+        #     # 指定文件地址
+        #     'filename': '%s/uauth.txt' % LOG_PATH,
+        #     # 格式
+        #     'formatter': 'default',
+        #     # 编码
+        #     'encoding': 'utf-8',
+        # }
+    },
+
+    'loggers': {
+        'douban': {
+            'handlers': ['douban_handlers'],
+            'level': 'DEBUG'
+        },
+        # 'auth': {
+        #     'handlers': ['uauth_handlers'],
+        #     'level': 'INFO'
+        # }
+    },
+
+    'filters': {
+
+    }
+}

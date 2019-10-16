@@ -17,10 +17,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-
 from douban import views
 
 urlpatterns = [
-    path('', views.index),
-    path('index/', TemplateView.as_view(template_name='index.html')),
+    path('show_douban_tv/', views.show_douban_tv, name='show_douban_tv'),
+    # path('index/', TemplateView.as_view(template_name='index.html')),
 ]
