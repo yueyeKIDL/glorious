@@ -1,14 +1,14 @@
 import logging
 import time
-from apscheduler.schedulers.background import BackgroundScheduler
 from collections import defaultdict
 
 import numpy as np
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler
 from bs4 import BeautifulSoup
 from django.core.cache import cache
-from django.http import HttpResponseNotFound
-from django.shortcuts import render, HttpResponse, Http404
+from django.http import HttpResponseNotFound, HttpResponseForbidden
+from django.shortcuts import render, HttpResponse
 
 # 日志
 logger = logging.getLogger('douban')
@@ -42,6 +42,8 @@ def get_base_rate(subjects):
 # print(parse.unquote(s))
 
 def grab_douban_tv():
+    """抓取热门剧集"""
+
     # 初始化剧集类型和投票基数
     tags = ['美剧', '英剧', '韩剧', '日剧', '国产剧', '港剧', '日本动画', '综艺', '纪录片']
     base_vote = 10000
@@ -100,10 +102,18 @@ scheduler_search_db.add_job(grab_douban_tv, "cron", day_of_week='3', hour='3', m
 scheduler_search_db.start()
 
 
+def update_douban_tv_cache(request):
+    """手动更新剧集缓存 - 被动更新"""
+    if request.user.is_superuser:
+        grab_douban_tv()
+        return HttpResponse('更新完毕！')
+    return HttpResponseForbidden()
+
+
 def show_douban_tv(request):
     """展示热门剧集"""
 
-    douban_tv_data = None
+    douban_tv_data = cache.get('douban_tv_data')
     if douban_tv_data:
         return render(request, 'show_douban_tv.html', context={'douban_tv_data': douban_tv_data})
     else:

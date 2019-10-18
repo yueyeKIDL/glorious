@@ -21,5 +21,6 @@ from douban import views
 
 urlpatterns = [
     path('show_douban_tv/', views.show_douban_tv, name='show_douban_tv'),
+    path('update_douban_tv_cache/', views.update_douban_tv_cache, name='update_douban_tv_cache'),
     # path('index/', TemplateView.as_view(template_name='index.html')),
 ]
