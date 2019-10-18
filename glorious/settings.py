@@ -81,18 +81,6 @@ DATABASES = {
 
 # Caches
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             "CONNECTION_POOL_KWARGS": {"max_connections": 100}
-#         }
-#     }
-# }
-
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',  # 数据库缓存
@@ -102,8 +90,15 @@ CACHES = {
             'MAX_ENTRIES': 365,  # 最大缓存个数（默认300）
             'CULL_FREQUENCY': 3,  # 缓存到达最大个数之后，剔除缓存个数的比例，即：1/CULL_FREQUENCY（默认3）
         },
-    }
-
+    },
+    # "default": {
+    #     "BACKEND": "django_redis.cache.RedisCache",  # Redis缓存
+    #     "LOCATION": "redis://127.0.0.1:6379/1",
+    #     "OPTIONS": {
+    #         "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    #         "CONNECTION_POOL_KWARGS": {"max_connections": 100}
+    #     }
+    # }
 }
 
 # django - redis作为session储存后端
@@ -164,6 +159,17 @@ LOG_PATH = os.path.join(BASE_DIR, 'log')
 if not os.path.exists(LOG_PATH):
     os.mkdir(LOG_PATH)
 
+# 错误日志邮件发送
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '549649714@qq.com'  # 发件箱
+EMAIL_HOST_PASSWORD = 'llivcwsfcmzgbeha'  # 开启POP3/SMTP服务
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+ADMINS = [('yueyeKIDL', 'ace1412kid@163.com')]  # 邮件接收人，可以有多个
+EMAIL_SUBJECT_PREFIX = '【glorious】'  # 为邮件标题的前缀,默认是'[django]'
+EMAIL_USE_TLS = True  # 开启安全链接
+DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER  # 设置发件人
+
 # 日志系统
 LOGGING = {
     # version只能为1,定义了配置文件的版本，当前版本号为1.0
@@ -200,32 +206,20 @@ LOGGING = {
             # 编码
             'encoding': 'utf-8',
         },
-        # 'uauth_handlers': {
-        #     'level': 'DEBUG',
-        #     # 超过5M重新命名，然后写入新的日志文件 txt.1,txt.2 ...
-        #     'class': 'logging.handlers.RotatingFileHandler',
-        #     # 指定文件大小
-        #     'maxBytes': 5 * 1024 * 1024,
-        #     # 文件数
-        #     'backupCount': 5,
-        #     # 指定文件地址
-        #     'filename': '%s/uauth.txt' % LOG_PATH,
-        #     # 格式
-        #     'formatter': 'default',
-        #     # 编码
-        #     'encoding': 'utf-8',
-        # }
+        'mail_admins_handlers': {  # 发送日志邮件
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'default',
+            'include_html': True,
+        },
     },
 
     'loggers': {
         'douban': {
-            'handlers': ['douban_handlers'],
-            'level': 'DEBUG'
+            'handlers': ['douban_handlers', 'mail_admins_handlers'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
-        # 'auth': {
-        #     'handlers': ['uauth_handlers'],
-        #     'level': 'INFO'
-        # }
     },
 
     'filters': {

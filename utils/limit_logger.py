@@ -1,0 +1,41 @@
+import time
+from functools import wraps
+from hashlib import md5
+
+from django.core.cache import cache
+
+
+def generate_md5(msg):
+    """生成md5值"""
+
+    hash = md5(bytes(msg, 'utf-8')).hexdigest()
+    return hash
+
+
+def limit_log_frequency(func):
+    """限制日志邮件发送频率"""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        msg = func.__name__ + args[1]
+        key = generate_md5(msg)
+        if not cache.get(key):
+            cache.set(key, time.time(), timeout=6 * 60 * 60)
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+class LimitLogger:
+    """限制日志邮件发送频率"""
+
+    def __init__(self, logger):
+        self.logger = logger
+
+    @limit_log_frequency
+    def error(self, msg, *args, **kwargs):
+        self.logger.error(msg, *args, **kwargs)
+
+    @limit_log_frequency
+    def exception(self, msg, *args, exc_info=True, **kwargs):
+        self.logger.exception(msg, *args, exc_info, **kwargs)

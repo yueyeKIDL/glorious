@@ -7,11 +7,13 @@ import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from bs4 import BeautifulSoup
 from django.core.cache import cache
-from django.http import HttpResponseNotFound, HttpResponseForbidden
-from django.shortcuts import render, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.shortcuts import HttpResponse, render
+
+from utils.limit_logger import LimitLogger
 
 # 日志
-logger = logging.getLogger('douban')
+logger = LimitLogger(logger=logging.getLogger('douban'))
 
 
 def get_vote(url, headers):
@@ -117,5 +119,5 @@ def show_douban_tv(request):
     if douban_tv_data:
         return render(request, 'show_douban_tv.html', context={'douban_tv_data': douban_tv_data})
     else:
-        logger.warning('热门剧集缓存失效，请排查定时调度机制和函数grab_douban_tv')
+        logger.error('热门剧集缓存失效，请排查BackgroundScheduler和函数grab_douban_tv (可手动访问update_douban_tv_cache接口调试)')
         return HttpResponseNotFound()
