@@ -27,7 +27,10 @@ def limit_log_frequency(func):
 
 
 class LimitLogger:
-    """限制日志邮件发送频率"""
+    """
+    限制日志邮件发送频率
+    只限制logger.error和logger.exception
+    """
 
     def __init__(self, logger):
         self.logger = logger
