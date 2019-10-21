@@ -9,7 +9,7 @@
 
 <!-- 图表容器 DOM -->
 
-{% for per_data in douban_tv_data %}
+{% for _ in douban_tv_data %}
     <div id="container{{ forloop.counter }}" style="min-width:400px;height:400px"></div>
     <br><br><br>
 {% endfor %}
@@ -24,16 +24,16 @@
 <script src="{% static 'highcharts/highcharts.js' %}"></script>
 
 <script>
-    {% for per_data in douban_tv_data %}
+    {% for per_tag_data in douban_tv_data %}
         var chart = Highcharts.chart('container{{ forloop.counter }}', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: '{{ per_data.tag | safe }}'
+                text: '{{ per_tag_data.tag | safe }}'
             },
             xAxis: [{
-                categories:{{ per_data.titles | safe }},
+                categories:{{ per_tag_data.titles | safe }},
                 crosshair: true
             }],
             yAxis: [{ // Primary yAxis
@@ -86,7 +86,7 @@
                 colorByPoint: true,
                 type: 'column',
                 yAxis: 1,
-                data: {{ per_data.votes | safe }},
+                data: {{ per_tag_data.votes | safe }},
                 tooltip: {
                     valueSuffix: ' 人'
                 }
@@ -94,7 +94,7 @@
                 name: '评分',
                 color: '#f28f3b',
                 type: 'line',
-                data: {{ per_data.rates | safe }},
+                data: {{ per_tag_data.rates | safe }},
                 tooltip: {
                     valueSuffix: '分'
                 }
