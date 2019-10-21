@@ -13,7 +13,7 @@ def generate_md5(msg):
 
 
 def limit_log_frequency(func):
-    """限制日志邮件发送频率"""
+    """装饰器 - 限制日志邮件发送频率"""
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -28,8 +28,10 @@ def limit_log_frequency(func):
 
 class LimitLogger:
     """
-    限制日志邮件发送频率
-    只限制logger.error和logger.exception
+    日志包装类 - 用来限制日志邮件发送频率
+    限制以下方法：
+        logger.error
+        logger.exception
     """
 
     def __init__(self, logger):
