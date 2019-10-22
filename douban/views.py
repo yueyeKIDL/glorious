@@ -1,5 +1,6 @@
 import decimal
 import logging
+from operator import itemgetter
 import time
 from collections import defaultdict
 from decimal import Decimal
@@ -76,6 +77,8 @@ def collect_tv_data(douban_tv_data, tag, subjects):
         subject_title = subject['title']
         subject_rate = float(subject['rate'])
         subject_url = subject['url']
+
+        # 获取投票数
         subject_vote = get_vote(subject_url, headers)
         douban_tv_data[tag].append(
             {
@@ -93,6 +96,8 @@ def filter_tv_series(douban_tv_data, tag):
     """筛选达标剧集"""
 
     tag_objs = douban_tv_data[tag]
+
+    # 获取基准数据
     base_rate, base_vote = get_base_data(tag_objs)
 
     tmp = []
@@ -157,17 +162,81 @@ def grab_douban_tv():
     cache.set("douban_tv_data", douban_tv_data, timeout=7 * 24 * 60 * 60)
 
 
+def vote_format(vote_str):
+    """评价人数格式化"""
+
+    vote = vote_str.split('人')[0][1:]
+    return int(vote)
+
+
+def grab_douban_books():
+    """抓取热门图书"""
+
+    url_data = {
+        '虚构类书籍': 'https://book.douban.com/chart?subcat=F&icn=index-topchart-fiction',
+        '非虚构类书籍': 'https://book.douban.com/chart?icn=index-topchart-nonfiction',
+    }
+    douban_books_data = []
+    for tag, url in url_data.items():
+        print('\n开始筛选 【{}书籍】...'.format(tag))
+        r = requests.get(url)
+
+        soup = BeautifulSoup(r.text, 'lxml')
+        titles_html = soup.select('#content > div > div.article > ul > li > div.media__body > h2 > a')
+        urls_html = soup.select('#content > div > div.article > ul > li > div.media__body > h2 > a')
+        rates_html = soup.select(
+            '#content > div > div.article > ul > li > div.media__body > p.clearfix.w250 > span.font-small.color-red.fleft')
+        votes_html = soup.select(
+            '#content > div > div.article > ul > li > div.media__body > p.clearfix.w250 > span.fleft.ml8.color-gray')
+
+        titles = [title_html.get_text() for title_html in titles_html]
+        urls = [url_html.get('href') for url_html in urls_html]
+        rates = [float(rate_html.get_text()) for rate_html in rates_html]
+        votes = [vote_format(vote_html.get_text()) for vote_html in votes_html]
+
+        for title, url, rate, vote in zip(titles, urls, rates, votes):
+            tmp = {}
+            tmp['tag'] = tag
+            tmp['title'] = title
+            tmp['url'] = url
+            tmp['rate'] = rate
+            tmp['vote'] = vote
+            douban_books_data.append(tmp)
+    douban_books_data = sorted(douban_books_data, key=itemgetter('rate'), reverse=True)
+    print(1111, douban_books_data)
+
+
+
+
+
+
+    print('\n筛选完毕...')
+    cache.delete("douban_books_data")
+    cache.set("douban_books_data", douban_books_data, timeout=7 * 24 * 60 * 60)
+
+
 # 定时任务调度
 scheduler_search_db = BackgroundScheduler()
 scheduler_search_db.add_job(grab_douban_tv, "cron", day_of_week='3', hour='3', minute='0')
+scheduler_search_db.add_job(grab_douban_books, "cron", day_of_week='1', hour='3', minute='0')
 scheduler_search_db.start()
 
 
 def update_douban_tv_cache(request):
     """手动更新剧集缓存 - 被动更新"""
+
     if request.user.is_superuser:
         grab_douban_tv()
         return HttpResponse('剧集更新完毕！')
+    return HttpResponseForbidden()
+
+
+def update_douban_books_cache(request):
+    """手动更新图书缓存 - 被动更新"""
+
+    if request.user.is_superuser:
+        grab_douban_books()
+        return HttpResponse('图书更新完毕！')
     return HttpResponseForbidden()
 
 
@@ -178,5 +247,16 @@ def show_douban_tv(request):
     if douban_tv_data:
         return render(request, 'show_douban_tv.html', context={'douban_tv_data': douban_tv_data})
     else:
-        logger.error('热门剧集缓存失效，请排查BackgroundScheduler和函数grab_douban_tv (可手动访问update_douban_tv_cache接口调试)')
+        logger.error('热门剧集缓存失效，请排查BackgroundScheduler和函数grab_douban_tv(可手动访问update_douban_tv_cache接口调试)')
+        return HttpResponseNotFound()
+
+
+def show_douban_books(request):
+    """展示热门书籍"""
+
+    douban_books_data = cache.get('douban_books_data')
+    if douban_books_data:
+        return render(request, 'show_douban_books.html', context={'douban_books_data': douban_books_data})
+    else:
+        logger.error('热门书籍缓存失效，请排查BackgroundScheduler和函数grab_douban_books(可手动访问update_douban_books_cache接口调试)')
         return HttpResponseNotFound()

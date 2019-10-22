@@ -1,0 +1,32 @@
+s = [{'tag': '虚构类书籍', 'title': '你想活出怎样的人生', 'url': 'https://book.douban.com/subject/34659228/', 'rate': 8.9,
+      'vote': 1187},
+     {'tag': '虚构类书籍', 'title': '网内人', 'url': 'https://book.douban.com/subject/34262174/', 'rate': 8.3, 'vote': 1856},
+     {'tag': '虚构类书籍', 'title': '尸人庄谜案', 'url': 'https://book.douban.com/subject/30396712/', 'rate': 7.5, 'vote': 1573},
+     {'tag': '虚构类书籍', 'title': '春日序曲', 'url': 'https://book.douban.com/subject/33451948/', 'rate': 8.1, 'vote': 403},
+     {'tag': '虚构类书籍', 'title': '醉步男', 'url': 'https://book.douban.com/subject/30359030/', 'rate': 9.0, 'vote': 652},
+     {'tag': '虚构类书籍', 'title': '82年生的金智英', 'url': 'https://book.douban.com/subject/34434309/', 'rate': 7.9,
+      'vote': 5635},
+     {'tag': '虚构类书籍', 'title': 'OPUS 作品', 'url': 'https://book.douban.com/subject/30473909/', 'rate': 9.1,
+      'vote': 2990},
+     {'tag': '虚构类书籍', 'title': '佛兰德镜子', 'url': 'https://book.douban.com/subject/34782362/', 'rate': 8.2, 'vote': 588},
+     {'tag': '虚构类书籍', 'title': '岛屿书', 'url': 'https://book.douban.com/subject/10537645/', 'rate': 8.4, 'vote': 801},
+     {'tag': '虚构类书籍', 'title': '消失的塞布丽娜', 'url': 'https://book.douban.com/subject/34448547/', 'rate': 8.4, 'vote': 331},
+     {'tag': '非虚构类书籍', 'title': '书店日记', 'url': 'https://book.douban.com/subject/33459737/', 'rate': 8.8, 'vote': 413},
+     {'tag': '非虚构类书籍', 'title': '日本人为何选择了战争', 'url': 'https://book.douban.com/subject/34204669/', 'rate': 8.7,
+      'vote': 294},
+     {'tag': '非虚构类书籍', 'title': '大脑健身房', 'url': 'https://book.douban.com/subject/34430051/', 'rate': 7.9, 'vote': 298},
+     {'tag': '非虚构类书籍', 'title': '设计之书', 'url': 'https://book.douban.com/subject/34661642/', 'rate': 8.5, 'vote': 142},
+     {'tag': '非虚构类书籍', 'title': '李银河说爱情', 'url': 'https://book.douban.com/subject/34460345/', 'rate': 8.1, 'vote': 924},
+     {'tag': '非虚构类书籍', 'title': '焦虑型人格自救手册', 'url': 'https://book.douban.com/subject/34432245/', 'rate': 6.9,
+      'vote': 713},
+     {'tag': '非虚构类书籍', 'title': '在别人的句子里', 'url': 'https://book.douban.com/subject/34441048/', 'rate': 8.4,
+      'vote': 815},
+     {'tag': '非虚构类书籍', 'title': '天才为何成群地来', 'url': 'https://book.douban.com/subject/33450028/', 'rate': 8.3,
+      'vote': 227},
+     {'tag': '非虚构类书籍', 'title': '至高权力', 'url': 'https://book.douban.com/subject/30394978/', 'rate': 9.3, 'vote': 113},
+     {'tag': '非虚构类书籍', 'title': '西方哲学史（第9版）', 'url': 'https://book.douban.com/subject/34447865/', 'rate': 9.5,
+      'vote': 138}]
+
+
+
+print(len(s))
