@@ -1,9 +1,9 @@
 import decimal
 import logging
-from operator import itemgetter
 import time
 from collections import defaultdict
 from decimal import Decimal
+from operator import itemgetter
 
 import numpy as np
 import requests
@@ -194,23 +194,12 @@ def grab_douban_books():
         rates = [float(rate_html.get_text()) for rate_html in rates_html]
         votes = [vote_format(vote_html.get_text()) for vote_html in votes_html]
 
-        for title, url, rate, vote in zip(titles, urls, rates, votes):
-            tmp = {}
-            tmp['tag'] = tag
-            tmp['title'] = title
-            tmp['url'] = url
-            tmp['rate'] = rate
-            tmp['vote'] = vote
-            douban_books_data.append(tmp)
-    douban_books_data = sorted(douban_books_data, key=itemgetter('rate'), reverse=True)
-    print(1111, douban_books_data)
-
-
-
-
-
+        tmp = [dict(title=title, url=url, rate=rate, vote=vote) for title, url, rate, vote in
+               zip(titles, urls, rates, votes)]
+        douban_books_data.extend(convert_data_format({tag: sorted(tmp, key=itemgetter('vote'), reverse=True)}))
 
     print('\n筛选完毕...')
+    print(1111, douban_books_data)
     cache.delete("douban_books_data")
     cache.set("douban_books_data", douban_books_data, timeout=7 * 24 * 60 * 60)
 
