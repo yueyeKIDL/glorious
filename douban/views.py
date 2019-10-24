@@ -112,7 +112,24 @@ def filter_tv_series(douban_tv_data, tag):
 
 
 def convert_data_format(douban_tv_data):
-    """转换数据格式 - 提供满足页面展示的数据格式"""
+    """
+    转换数据格式 - 提供满足页面展示的数据格式
+    input:
+    {
+        tag: [
+            {'title': title, 'url': url, 'rate': rate, 'vote': vote},
+            {...},
+            {...},
+        ]
+    }
+    output:
+    [
+        {'tag': tag, 'titles': ['xx', 'xx'], 'urls': ['xx', 'xx'], 'rates': ['xx', 'xx'], 'vote': ['xx', 'xx']},
+        {...},
+        {...},
+    ]
+
+    """
 
     result = []
 
@@ -122,9 +139,9 @@ def convert_data_format(douban_tv_data):
 
         for tag_obj in tag_objs:
             title = tag_obj['title']
+            url = tag_obj['url']
             rate = tag_obj['rate']
             vote = tag_obj['vote']
-            url = tag_obj['url']
 
             tmp['titles'].append(title)
             tmp['rates'].append(rate)
@@ -151,6 +168,7 @@ def grab_douban_tv():
 
         # 筛选达标剧集
         douban_tv_data = filter_tv_series(douban_tv_data, tag)
+        douban_tv_data[tag].sort(key=itemgetter('vote'), reverse=True)
 
     print('\n筛选完毕...')
     douban_tv_data = convert_data_format(douban_tv_data)
