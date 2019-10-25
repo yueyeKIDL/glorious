@@ -168,7 +168,7 @@ def grab_douban_tv():
 
         # 筛选达标剧集
         douban_tv_data = filter_tv_series(douban_tv_data, tag)
-        douban_tv_data[tag].sort(key=itemgetter('vote'), reverse=True)
+        douban_tv_data[tag].sort(key=itemgetter('rate'), reverse=True)
 
     print('\n筛选完毕...')
     douban_tv_data = convert_data_format(douban_tv_data)
@@ -190,36 +190,43 @@ def vote_format(vote_str):
 def grab_douban_books():
     """抓取热门图书"""
 
-    url_data = {
+    book_urls = {
         '虚构类书籍': 'https://book.douban.com/chart?subcat=F&icn=index-topchart-fiction',
         '非虚构类书籍': 'https://book.douban.com/chart?icn=index-topchart-nonfiction',
     }
-    douban_books_data = []
-    for tag, url in url_data.items():
-        print('\n开始筛选 【{}书籍】...'.format(tag))
-        r = requests.get(url)
+    douban_book_data = []
 
+    for tag, url in book_urls.items():
+        # 抓取数据
+        print('\n开始抓取 【{}书籍】...'.format(tag))
+        r = requests.get(url)
         soup = BeautifulSoup(r.text, 'lxml')
         titles_html = soup.select('#content > div > div.article > ul > li > div.media__body > h2 > a')
         urls_html = soup.select('#content > div > div.article > ul > li > div.media__body > h2 > a')
-        rates_html = soup.select(
-            '#content > div > div.article > ul > li > div.media__body > p.clearfix.w250 > span.font-small.color-red.fleft')
-        votes_html = soup.select(
-            '#content > div > div.article > ul > li > div.media__body > p.clearfix.w250 > span.fleft.ml8.color-gray')
+        rates_html = soup.select('#content > div > div.article > ul > li > div.media__body > p.clearfix.w250 '
+                                 '> span.font-small.color-red.fleft')
+        votes_html = soup.select('#content > div > div.article > ul > li > div.media__body > p.clearfix.w250 '
+                                 '> span.fleft.ml8.color-gray')
 
+        # 数据整形
         titles = [title_html.get_text() for title_html in titles_html]
         urls = [url_html.get('href') for url_html in urls_html]
         rates = [float(rate_html.get_text()) for rate_html in rates_html]
         votes = [vote_format(vote_html.get_text()) for vote_html in votes_html]
 
-        tmp = [dict(title=title, url=url, rate=rate, vote=vote) for title, url, rate, vote in
+        tmp = [dict(tag=tag, title=title, url=url, rate=rate, vote=vote) for title, url, rate, vote in
                zip(titles, urls, rates, votes)]
-        douban_books_data.extend(convert_data_format({tag: sorted(tmp, key=itemgetter('vote'), reverse=True)}))
 
-    print('\n筛选完毕...')
-    print(1111, douban_books_data)
-    cache.delete("douban_books_data")
-    cache.set("douban_books_data", douban_books_data, timeout=7 * 24 * 60 * 60)
+        # 按评分排序
+        tmp.sort(key=itemgetter('rate'), reverse=True)
+
+        # 保存数据
+        douban_book_data.extend(tmp)
+
+    print(1111, douban_book_data)
+    print('\n抓取完毕...')
+    # cache.delete("douban_books_data")
+    # cache.set("douban_books_data", douban_book_data, timeout=7 * 24 * 60 * 60)
 
 
 # 定时任务调度
