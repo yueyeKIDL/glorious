@@ -18,7 +18,7 @@ def limit_log_frequency(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         msg = func.__name__ + args[1]
-        key = generate_md5(msg)
+        key = 'log' + func.__name__ + generate_md5(msg)
         if not cache.get(key):
             cache.set(key, time.time(), timeout=6 * 60 * 60)
             return func(*args, **kwargs)

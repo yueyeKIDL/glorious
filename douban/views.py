@@ -19,17 +19,15 @@ from utils.limit_logger import LimitLogger
 logger = LimitLogger(logger=logging.getLogger('douban'))
 
 headers = {
-    "Host": "movie.douban.com",
-    "Referer": "https://movie.douban.com/",
-    "Upgrade-Insecure-Requests": "1",
+    'Cookie': 'bid=R_NjGlmHzLc; ll="108289"; __utmv=30149280.7162; douban-profile-remind=1; __guid=223695111.2801261442483869700.1555121081221.0579; __yadk_uid=su0b7K9g36n02VtPodU6bxjSmrqQNeVi; _vwo_uuid_v2=DA75957D9968A846830D702056248817A|624640ba21d7d6658c71f663d419f44e; douban-fav-remind=1; gr_user_id=d3b07b2b-f556-4601-b7a2-37f2cbe0d6fc; __gads=ID=af43163fe1df4ca9:T=1557648109:S=ALNI_MYSMPOl2Hkvn60cUHrt3jzyod7RSg; trc_cookie_storage=taboola%2520global%253Auser-id%3Db66f3e30-dd4d-429c-9e40-06a34397d236-tuct33c4874; viewed="30458408"; push_noty_num=0; push_doumail_num=0; UM_distinctid=16d33142cca8c-08976d3fc7c8f8-3c604504-1fa400-16d33142ccb240; _ga=GA1.2.2035684642.1554454926; ct=y; Hm_lvt_16a14f3002af32bf3a75dfe352478639=1569908316; Hm_lvt_19fc7b106453f97b6a84d64302f21a04=1569911303; dbcl2="71620970:2HsyGJY0rLE"; ck=vc6W; __utmc=30149280; __utmc=223695111; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1572151618%2C%22https%3A%2F%2Fbook.douban.com%2Fchart%3Ficn%3Dindex-topchart-nonfiction%22%5D; _pk_ses.100001.4cf6=*; __utma=30149280.2035684642.1554454926.1572147866.1572151618.57; __utmz=30149280.1572151618.57.29.utmcsr=book.douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/chart; __utma=223695111.1088930519.1555121082.1572149770.1572151618.43; __utmb=223695111.0.10.1572151618; __utmz=223695111.1572151618.43.36.utmcsr=book.douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/chart; _pk_id.100001.4cf6=4188bfc644de230d.1555121081.43.1572151711.1572149770.; __utmb=30149280.2.10.1572151618; monitor_count=10',
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36",
 }
 
 
-def get_vote(url, headers):
+def get_vote(url, session):
     """获取评价人数"""
 
-    r = requests.get(url, headers=headers)
+    r = session.get(url)
     soup = BeautifulSoup(r.text, 'lxml')
     vote = soup.select('#interest_sectl > div > div.rating_self.clearfix > div > div.rating_sum > a > span')[0].text
     time.sleep(0.1)
@@ -59,18 +57,18 @@ def get_base_data(tag_objs):
     # print(parse.unquote(s))
 
 
-def get_tag_page_json(tag):
+def get_tag_page_json(tag, session):
     """获取当前剧集页返回json信息"""
 
     print('开始筛选 【{}】...'.format(tag))
     url = 'https://movie.douban.com/j/search_subjects?'
     payload = dict(type='tv', tag=tag, sort='recommend', page_limit=20, page_start=0)
-    r = requests.get(url, headers=headers, params=payload)
+    r = session.get(url, params=payload)
     subjects = r.json()['subjects']
     return subjects
 
 
-def collect_tv_data(douban_tv_data, tag, subjects):
+def collect_tv_data(douban_tv_data, tag, subjects, session):
     """收集剧集信息"""
 
     for subject in subjects:
@@ -79,7 +77,7 @@ def collect_tv_data(douban_tv_data, tag, subjects):
         subject_url = subject['url']
 
         # 获取投票数
-        subject_vote = get_vote(subject_url, headers)
+        subject_vote = get_vote(subject_url, session)
         douban_tv_data[tag].append(
             {
                 'title': subject_title,
@@ -158,13 +156,15 @@ def grab_douban_tv():
     # 初始化剧集类型和投票基数
     tags = ['美剧', '英剧', '韩剧', '日剧', '国产剧', '港剧', '日本动画', '综艺', '纪录片']
     douban_tv_data = defaultdict(list)
+    session = requests.Session()
+    session.get('https://www.douban.com/', headers=headers)
 
     for tag in tags:
         # 获取当前剧集页返回json信息
-        subjects = get_tag_page_json(tag)
+        subjects = get_tag_page_json(tag, session)
 
         # 收集剧集信息
-        douban_tv_data = collect_tv_data(douban_tv_data, tag, subjects)
+        douban_tv_data = collect_tv_data(douban_tv_data, tag, subjects, session)
 
         # 筛选达标剧集
         douban_tv_data = filter_tv_series(douban_tv_data, tag)
@@ -199,7 +199,7 @@ def grab_douban_books():
     for tag, url in book_urls.items():
         # 抓取数据
         print('\n开始抓取 【{}书籍】...'.format(tag))
-        r = requests.get(url)
+        r = requests.get(url, headers=headers)
         soup = BeautifulSoup(r.text, 'lxml')
         titles_html = soup.select('#content > div > div.article > ul > li > div.media__body > h2 > a')
         urls_html = soup.select('#content > div > div.article > ul > li > div.media__body > h2 > a')
@@ -214,19 +214,18 @@ def grab_douban_books():
         rates = [float(rate_html.get_text()) for rate_html in rates_html]
         votes = [vote_format(vote_html.get_text()) for vote_html in votes_html]
 
-        tmp = [dict(tag=tag, title=title, url=url, rate=rate, vote=vote) for title, url, rate, vote in
+        tmp = [dict(title=title, url=url, rate=rate, vote=vote) for title, url, rate, vote in
                zip(titles, urls, rates, votes)]
 
         # 按评分排序
-        tmp.sort(key=itemgetter('rate'), reverse=True)
+        tmp = convert_data_format({tag: sorted(tmp, key=itemgetter('rate'), reverse=True)})
 
         # 保存数据
         douban_book_data.extend(tmp)
 
-    print(1111, douban_book_data)
     print('\n抓取完毕...')
-    # cache.delete("douban_books_data")
-    # cache.set("douban_books_data", douban_book_data, timeout=7 * 24 * 60 * 60)
+    cache.delete("douban_books_data")
+    cache.set("douban_books_data", douban_book_data, timeout=7 * 24 * 60 * 60)
 
 
 # 定时任务调度

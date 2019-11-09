@@ -6,7 +6,7 @@ from django.utils import timezone
 
 class Question(models.Model):
     question_text = models.CharField(verbose_name='内容', max_length=200)
-    pub_date = models.DateTimeField('发布日期')
+    pub_date = models.DateTimeField('发布日期', auto_now_add=True)
 
     def was_published_recently(self):
         now = timezone.now()

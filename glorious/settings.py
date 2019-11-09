@@ -22,9 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'xrth56fm%_d(voh$s70t*-m@9l52knj*e#u!350__r_qb&^s5p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*', ]
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -162,24 +162,26 @@ LOG_PATH = os.path.join(BASE_DIR, 'log')
 if not os.path.exists(LOG_PATH):
     os.mkdir(LOG_PATH)
 
-# 错误日志邮件发送
-EMAIL_HOST = 'smtp.qq.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = '549649714@qq.com'  # 发件箱
-EMAIL_HOST_PASSWORD = 'llivcwsfcmzgbeha'  # 开启POP3/SMTP服务
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-ADMINS = [('yueyeKIDL', 'ace1412kid@163.com')]  # 邮件接收人，可以有多个
-EMAIL_SUBJECT_PREFIX = '【glorious】'  # 为邮件标题的前缀,默认是'[django]'
-EMAIL_USE_TLS = True  # 开启安全链接
-DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER  # 设置发件人
+# 邮箱相关设置
+# EMAIL_HOST = 'smtp.qq.com'
+# EMAIL_PORT = 25
+# EMAIL_HOST_USER = 'xxx@qq.com'  # 发件箱
+# EMAIL_HOST_PASSWORD = 'llivcwsfcmzgbeha'  # 开启POP3/SMTP服务
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# ADMINS = [('yueyeKIDL', 'xxx@163.com')]  # 邮件接收人，可以有多个
+# EMAIL_SUBJECT_PREFIX = '【glorious】'  # 为邮件标题的前缀,默认是'[django]'
+# EMAIL_USE_TLS = True  # 开启安全链接
+# DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER  # 设置发件人
 
 # 日志系统
 LOGGING = {
     # version只能为1,定义了配置文件的版本，当前版本号为1.0
     "version": 1,
+
     # True表示禁用logger
     "disable_existing_loggers": False,
-    # 格式化
+
+    # 格式化设置
     'formatters': {
         'default': {
             'format': '%(asctime)s %(levelname)s [%(filename)s -> def %(funcName)s:line %(lineno)d] [%(message)s]'
@@ -193,6 +195,7 @@ LOGGING = {
         }
     },
 
+    # 处理器设置
     'handlers': {
         'douban_handlers': {
             'level': 'DEBUG',
@@ -217,6 +220,7 @@ LOGGING = {
         },
     },
 
+    # 加载日志，例：logger=logging.getLogger('douban')
     'loggers': {
         'douban': {
             'handlers': ['douban_handlers', 'mail_admins_handlers'],

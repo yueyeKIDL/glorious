@@ -1,3 +1,3 @@
-from django.test import TestCase
-
-# Create your tests here.
+arr = [1,2,3]
+print(arr.pop())
+print(arr)
