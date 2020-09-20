@@ -8,8 +8,7 @@ from django.core.cache import cache
 def generate_md5(msg_master):
     """生成md5值"""
 
-    hash = md5(bytes(msg_master, 'utf-8')).hexdigest()
-    print(hash)
+    hash1 = md5(bytes(msg_master, 'utf-8')).hexdigest()
     return hash
 
 
