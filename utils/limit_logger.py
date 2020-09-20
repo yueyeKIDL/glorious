@@ -11,7 +11,7 @@ def generate_md5(msg_master):
     """生成md5值"""
 
     print('fowjeofwe')
-    a = 2
+    a = 888
     b = 3
     c = a + b
     hash = md5(bytes(msg_master, 'utf-8')).hexdigest()
