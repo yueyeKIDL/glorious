@@ -10,7 +10,7 @@ def generate_md5(msg_master):
 
     print('fowjeofwe')
     a = 1
-    b = 66678
+    b = 6
     print(a + b)
     hash = md5(bytes(msg_master, 'utf-8')).hexdigest()
     print(hash)
