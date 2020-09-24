@@ -17,14 +17,14 @@ def limit_log_frequency(func):
     """装饰器 - 限制日志邮件发送频率"""
 
     @wraps(func)
-    def wrapper2(*args, **kwargs):
+    def wrapper3(*args, **kwargs):
         msg = func.__name__ + args[1]
         key = 'log' + func.__name__ + generate_md5(msg)
         if not cache.get(key):
             cache.set(key, time.time(), timeout=6 * 60 * 60)
             return func(*args, **kwargs)
 
-    return wrapper2
+    return wrapper3
 
 
 class LimitLogger:
