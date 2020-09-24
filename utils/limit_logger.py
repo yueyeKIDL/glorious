@@ -5,15 +5,11 @@ from hashlib import md5
 from django.core.cache import cache
 
 
-def generate_md5(msg_master):
+def generate_md5(msg):
     """生成md5值"""
 
-    print('fowjeofwe')
-    a = 1
-    b = 6
-    print(a + b)
-    hash = md5(bytes(msg_master, 'utf-8')).hexdigest()
-    print(hash)
+    hash = md5(bytes(msg, 'utf-8')).hexdigest()
+    print('liguo')
     return hash
 
 
