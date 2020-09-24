@@ -36,12 +36,12 @@ class LimitLogger1314:
     """
 
     def __init__(self, logger):
-        self.logger = logger
+        self.logger1 = logger
 
     @limit_log_frequency
     def error(self, msg, *args, **kwargs):
-        self.logger.error(msg, *args, **kwargs)
+        self.logger1.error(msg, *args, **kwargs)
 
     @limit_log_frequency
     def exception(self, msg, *args, exc_info=True, **kwargs):
-        self.logger.exception(msg, *args, exc_info, **kwargs)
+        self.logger1.exception(msg, *args, exc_info, **kwargs)
