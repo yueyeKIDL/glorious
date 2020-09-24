@@ -27,7 +27,7 @@ def limit_log_frequency(func):
     return wrapper
 
 
-class LimitLogger:
+class LimitLogger1314:
     """
     日志包装类 - 用来限制日志邮件发送频率
     限制以下方法：
