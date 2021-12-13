@@ -6,7 +6,7 @@ Django==2.2.13
 django-redis==4.10.0
 django-simpleui==3.2
 idna==2.8
-lxml==4.4.1
+lxml==4.6.5
 mysqlclient==1.4.4
 numpy==1.17.2
 pytz==2019.3
