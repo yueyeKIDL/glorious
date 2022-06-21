@@ -8,7 +8,7 @@ django-simpleui==3.2
 idna==2.8
 lxml==4.4.1
 mysqlclient==1.4.4
-numpy==1.17.2
+numpy==1.22.0
 pytz==2019.3
 redis==3.3.10
 requests==2.22.0
